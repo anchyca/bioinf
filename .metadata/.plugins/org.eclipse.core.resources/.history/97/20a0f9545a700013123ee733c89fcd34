@@ -1,0 +1,8 @@
+public class GenerateArray{
+	
+	int array[] = new int[1000];
+	
+	for (int i=0; i<1000; i++){
+		array[i]=1 + (int)(Math.random() * ((10000 - 1) + 1));
+	}
+}
