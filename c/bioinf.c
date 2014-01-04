@@ -5,7 +5,7 @@
 
 int binary_replace(int *lis, int left, int right, int key) {
         int mid;
-
+        //Standard binary search
         for (mid = (left+right)/2; left <= right; mid = (left+right)/2) {
                 if (lis[mid] > key) {
                         right = mid - 1;
@@ -27,29 +27,33 @@ int binary_replace(int *lis, int left, int right, int key) {
 }
 
 int main(void) {
+        //Variables for time measurement
         clock_t begin, end;
+        begin = clock();
         double time_spent;
+
         int i=0, tmp,lis_length = -1,storage=0;
         int *answer;
         int *A = (int*) malloc(1*sizeof(int));
-        /*int *LIS = (int*) malloc(100*sizeof(int));
-        int *index = (int*) malloc(100*sizeof(int));*/
 
+        //Reading the input file
         FILE *fp = fopen("u.txt","r");
         while(fscanf(fp,"%d, ",&tmp)>0)
          {
              A[i]=tmp;
-             //printf("%d\n",A[i]);
              i++;
+             //Reallocate memory because of unknown list size
              A=(int*)realloc(A,(i+1)*sizeof(int));
          }
         fclose(fp);
 
-        begin = clock();
-        int size=i;
+
+        int size=i; //Last index shows the size of the list
         int *LIS = (int*) malloc(i*sizeof(int));
         int *index = (int*) malloc(i*sizeof(int));
-        storage =5*sizeof(int)+4*sizeof(int*)+i*3*sizeof(int);
+
+        //Manual memory allocation calclulation
+        storage =5*sizeof(int)+4*sizeof(int*)+size*3*sizeof(int);
         for (i = 0; i < size; i++)
         {
                 index[i] = binary_replace(LIS, 0, i, A[i]);
@@ -68,6 +72,8 @@ int main(void) {
                      tmp--;
                 }
         }
+
+        //Open and write the list into the output file
         fp = fopen("output.txt","w");
         fprintf(fp,"[");
         for (i = 0; i < lis_length; ++i) {
@@ -76,9 +82,10 @@ int main(void) {
         fprintf(fp,"%d]",answer[lis_length]);
         fclose(fp);
 
+        //Calculate required time
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-        printf("Vrijeme izvodenja: %f s\n",time_spent);
-        printf("Zauzece memorije: %d B\n",storage);
+        printf("Time [s]: %f\n",time_spent);
+        printf("Memory [B]: %d\n",storage);
         return 0;
 }
