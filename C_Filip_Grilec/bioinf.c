@@ -40,14 +40,15 @@ int parseLine(char* line){
         i = atoi(line);
         return i;
     }
-    
 
-int getValue(){ 
+
+int getValue(){
 	//Note: this value is in KB!
+	//works only in Linux
         FILE* file = fopen("/proc/self/status", "r");
         int result = -1;
         char line[128];
-    
+
 
         while (fgets(line, 128, file) != NULL){
             if (strncmp(line, "VmSize:", 7) == 0){
@@ -73,7 +74,7 @@ int main(void) {
         FILE *fp = fopen("u.txt","r");
         if(fp==NULL)
         {
-            printf("Gre¨ka!");
+            printf("Error!");
             return 0;
         }
         while(fscanf(fp,"%d, ",&tmp)>0)
@@ -116,7 +117,7 @@ int main(void) {
         //if it fails
         if(fp==NULL)
         {
-            printf("Greška!");
+            printf("Error!");
             return 0;
         }
         //output formatting
