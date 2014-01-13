@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 
 
@@ -32,13 +33,39 @@ int binary_rep(int *arr, int left, int right, int key) {
         return mid+1;
 }
 
+int parseLine(char* line){
+        int i = strlen(line);
+        while (*line < '0' || *line > '9') line++;
+        line[i-3] = '\0';
+        i = atoi(line);
+        return i;
+    }
+    
+
+int getValue(){ 
+	//Note: this value is in KB!
+        FILE* file = fopen("/proc/self/status", "r");
+        int result = -1;
+        char line[128];
+    
+
+        while (fgets(line, 128, file) != NULL){
+            if (strncmp(line, "VmSize:", 7) == 0){
+                result = parseLine(line);
+                break;
+            }
+        }
+        fclose(file);
+        return result;
+    }
+
 int main(void) {
         //Variables for time measurement
         clock_t begin, end;
         begin = clock();
         double time_spent;
 
-        int i=0, tmp,length = -1,storage=0;
+        int i=0, tmp,length = -1;
         //Allocation of memory for the array(first member)
         int *arr_0 =(int*) malloc(1*sizeof(int));
 
@@ -46,7 +73,7 @@ int main(void) {
         FILE *fp = fopen("u.txt","r");
         if(fp==NULL)
         {
-            printf("Greška!");
+            printf("Gre¨ka!");
             return 0;
         }
         while(fscanf(fp,"%d, ",&tmp)>0)
@@ -99,16 +126,13 @@ int main(void) {
         }
         fprintf(fp,"%d]",res[length]);
         fclose(fp);
-        //Memory allocation calculation
-        //not sure if better way
-        //for "real" use the memory allocation was viewed through task manager (windows)
-        //or terminal command " ps -e -orss=,args= | sort -b -k1,1n | pr -TW$COLUMNS" for linux
-        storage =5*sizeof(int)+4*sizeof(int*)+size*3*sizeof(int);
+
         //Calculate required time
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
         printf("Time [s]: %f\n",time_spent);
-        printf("Memory [B]: %d\n",storage);
+	//Memory allocation calculation in function
+        printf("Memory [B]: %d\n",getValue()*1024);
 
         return 0;
 }
