@@ -3,9 +3,11 @@
 #include <time.h>
 
 
-int binary_rep(int *arr, int left, int right, int key) {
-        //Vrši se standardna binarna pretraga i ubacuje se broj u rezultatni niz.
 
+
+
+int binary_rep(int *arr, int left, int right, int key) {
+        //Standard binary search and insertion of number into the result array
         int mid=(left+right)/2;
         for (mid; left <= right; mid = (left+right)/2)
         {
@@ -31,16 +33,16 @@ int binary_rep(int *arr, int left, int right, int key) {
 }
 
 int main(void) {
-        //Varijable za mjerenje vremena
+        //Variables for time measurement
         clock_t begin, end;
         begin = clock();
         double time_spent;
 
         int i=0, tmp,length = -1,storage=0;
-        //Alokacija memorije za prvi clan niza
+        //Allocation of memory for the array(first member)
         int *arr_0 =(int*) malloc(1*sizeof(int));
 
-        //Citanje iz ulazne datoteke
+        //Reading input file
         FILE *fp = fopen("u.txt","r");
         if(fp==NULL)
         {
@@ -51,13 +53,12 @@ int main(void) {
          {
              arr_0[i]=tmp;
              i++;
-             //Realokacija za dodatak svakog novog clana
+             //Reallocation for every new member added, uknown input size
              arr_0=(int*)realloc(arr_0,(i+1)*sizeof(int));
          }
         fclose(fp);
-
-        // i iz for petlje sluzio za zapis duljine ulaznog niza
-        // te alokaciju memorije sukladno toj velicini
+        // after reading the input is done, i represents number of members in the array
+        // memory allocation follows accordingly
         int size=i;
         int *arr_n = (int*) malloc(i*sizeof(int));    //lista brojeva
         int *index = (int*) malloc(i*sizeof(int));  //lista indeksa
@@ -65,14 +66,14 @@ int main(void) {
 
         for (i = 0; i < size; i++)
         {
-                //vrsi binarnu pretragu u danom intervalu te vrši zamjenu
+                //for every member, do a binary search and replacement
                 index[i] = binary_rep(arr_n, 0, i, arr_0[i]);
                 if (length < index[i])
                 {
                     length = index[i];
                 }
         }
-        //dodjelji
+        //reading output array backwards to recieve the longest increasing substring
         int *res = (int*) malloc((length+1) * sizeof(int));
         for (i = size-1, tmp = length; i >= 0; i--)
         {
@@ -82,8 +83,7 @@ int main(void) {
                      tmp--;
                 }
         }
-        //Zapis u izlaznu datoteku
-        //Za promjenu ulaza+izlaza iz hardkodirane verzije treba samo koristiti cmd argumente :)
+        //writing in output file
 
         fp = fopen("output.txt","w");
         //if it fails
@@ -92,20 +92,23 @@ int main(void) {
             printf("Greška!");
             return 0;
         }
-        //format izlaza
+        //output formatting
         fprintf(fp,"[");
         for (i = 0; i < length; ++i) {
                 fprintf(fp,"%d, ", res[i]);
         }
         fprintf(fp,"%d]",res[length]);
         fclose(fp);
-        //Racunanje potrebne memorije
+        //Memory allocation calculation
         //not sure if better way
+        //for "real" use the memory allocation was viewed through task manager (windows)
+        //or terminal command " ps -e -orss=,args= | sort -b -k1,1n | pr -TW$COLUMNS" for linux
         storage =5*sizeof(int)+4*sizeof(int*)+size*3*sizeof(int);
         //Calculate required time
         end = clock();
         time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
         printf("Time [s]: %f\n",time_spent);
         printf("Memory [B]: %d\n",storage);
+
         return 0;
 }
