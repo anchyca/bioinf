@@ -96,7 +96,7 @@ public class LongestIncreasingSubsequence{
 		
 		// File opening
 		BufferedReader bufferedReader = new BufferedReader(new
-                                             FileReader("u.txt"));
+                                             FileReader(args[0]));
 		try{ // File reading
 			stringBuilder = new StringBuilder();
 			String line = bufferedReader.readLine();
