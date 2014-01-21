@@ -60,7 +60,7 @@ int getValue(){
         return result;
     }
 
-int main(void) {
+int main(int argc, char *argv[]) {
         //Variables for time measurement
         clock_t begin, end;
         begin = clock();
@@ -71,7 +71,7 @@ int main(void) {
         int *arr_0 =(int*) malloc(1*sizeof(int));
 
         //Reading input file
-        FILE *fp = fopen("u.txt","r");
+        FILE *fp = fopen(argv[1],"r");
         if(fp==NULL)
         {
             printf("Error!");
@@ -113,7 +113,7 @@ int main(void) {
         }
         //writing in output file
 
-        fp = fopen("output.txt","w");
+        fp = fopen(argv[1],"w");
         //if it fails
         if(fp==NULL)
         {
@@ -121,11 +121,10 @@ int main(void) {
             return 0;
         }
         //output formatting
-        fprintf(fp,"[");
-        for (i = 0; i < length; ++i) {
+        for (i = 0; i < length-1; ++i) {
                 fprintf(fp,"%d, ", res[i]);
         }
-        fprintf(fp,"%d]",res[length]);
+        fprintf(fp,"%d",res[length]);
         fclose(fp);
 
         //Calculate required time
