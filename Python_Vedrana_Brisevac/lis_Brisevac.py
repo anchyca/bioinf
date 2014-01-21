@@ -3,6 +3,7 @@
  
 import bisect
 import time
+import sys
 
 def patienceSorting(dataList):
     # patienceSorting(dataList) creates heapCurrent and heaps list
@@ -46,7 +47,7 @@ def findLongestIncreasingSubsequence(dataList):
 if __name__ == '__main__':
     #
     begin = time.clock()
-    fInput = open ('u.txt','r')
+    fInput = open (sys.argv[1],'r')
     dataString = fInput.read()
     fInput.close()
     dataList=[int(i) for i in dataString.split(",")]
