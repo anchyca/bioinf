@@ -1,5 +1,5 @@
 import time
-
+import sys
 
 #Function that finds longest increasing subsequence
 def longest_increasing_subsequence(input):
@@ -59,7 +59,7 @@ def longest_increasing_subsequence(input):
 
 #Main function      
 if __name__ == '__main__':
-        f1 = open ('u.txt','r')
+        f1 = open (sys.argv[1],'r')
         f2 = open ('izlaz.txt','w')
     
         """
