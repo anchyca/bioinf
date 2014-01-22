@@ -1,37 +1,7 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include <string.h>
-
-
-
-
-
-int binary_rep(int *arr, int left, int right, int key) {
-        //Standard binary search and insertion of number into the result array
-        int mid=(left+right)/2;
-        for (mid; left <= right; mid = (left+right)/2)
-        {
-                if (arr[mid] > key)
-                        right = mid - 1;
-                else if (arr[mid] == key)
-                        return mid;
-                else if (mid+1 <= right && arr[mid+1] >= key)
-                    {
-                        arr[mid+1] = key;
-                        return mid+1;
-                    }
-                else
-                        left = mid + 1;
-        }
-        if (mid == left)
-        {
-            arr[mid] = key;
-            return mid;
-        }
-        arr[mid+1] = key;
-        return mid+1;
-}
+#include <time.h>
+#include <stdlib.h>
 
 int parseLine(char* line){
         int i = strlen(line);
@@ -40,15 +10,14 @@ int parseLine(char* line){
         i = atoi(line);
         return i;
     }
+    
 
-
-int getValue(){
+int getValue(){ 
 	//Note: this value is in KB!
-	//works only in Linux
         FILE* file = fopen("/proc/self/status", "r");
         int result = -1;
         char line[128];
-
+    
 
         while (fgets(line, 128, file) != NULL){
             if (strncmp(line, "VmSize:", 7) == 0){
@@ -60,17 +29,39 @@ int getValue(){
         return result;
     }
 
-int main(int argc, char *argv[]) {
-        //Variables for time measurement
-        clock_t begin, end;
+
+
+int binary_search(int *A,int *M, int pos,int len)
+{
+	//Standard binary search algorithm
+	//Reduce window size until you find X
+	int x=0,y=len,middle;
+	while(x<=y)
+	{
+		middle=(x+y)/2;
+		if(A[M[middle]]<A[pos])
+		{
+			x=middle+1;
+		}
+		else
+		{
+			y=middle-1;
+		}	
+	}
+	return y;
+}
+
+int main(int argc, char *argv[])
+{
+	//variables and start for/of time measurement
+	clock_t begin, end;
         begin = clock();
         double time_spent;
 
-        int i=0, tmp,length = -1;
-        //Allocation of memory for the array(first member)
-        int *arr_0 =(int*) malloc(1*sizeof(int));
+	int i=0,tmp,length;
+	int *input =(int*) malloc(1*sizeof(int));
 
-        //Reading input file
+	//Opening input file
         FILE *fp = fopen(argv[1],"r");
         if(fp==NULL)
         {
@@ -79,60 +70,68 @@ int main(int argc, char *argv[]) {
         }
         while(fscanf(fp,"%d, ",&tmp)>0)
          {
-             arr_0[i]=tmp;
+             input[i]=tmp;
+	     //printf("%d, ",input[i]);
              i++;
-             //Reallocation for every new member added, uknown input size
-             arr_0=(int*)realloc(arr_0,(i+1)*sizeof(int));
+	     input=(int*)realloc(input,(i+1)*sizeof(int));	
          }
-        fclose(fp);
-        // after reading the input is done, i represents number of members in the array
-        // memory allocation follows accordingly
-        int size=i;
-        int *arr_n = (int*) malloc(i*sizeof(int));    //lista brojeva
-        int *index = (int*) malloc(i*sizeof(int));  //lista indeksa
+	fclose(fp);
+	length = i;
 
+	int L=0,j;
+	//Allocating extra arrays needed for the alg.
+	//Based on the size of the input array
+	int *M = (int*) malloc (length*sizeof(int));
+	int *P = (int*) malloc (length*sizeof(int));
+	//array of numbers in current longest sequence
+	M[0]=0;
+	//array of predecessors
+	P[0]=-1;
+	
+	for(i=0;i<length;i++)
+	{
+		/*for every element of the input array, you finish a 			binary search to find a new element, and remember the 			position of the predecessor
 
-        for (i = 0; i < size; i++)
-        {
-                //for every member, do a binary search and replacement
-                index[i] = binary_rep(arr_n, 0, i, arr_0[i]);
-                if (length < index[i])
-                {
-                    length = index[i];
-                }
-        }
-        //reading output array backwards to recieve the longest increasing substring
-        int *res = (int*) malloc((length+1) * sizeof(int));
-        for (i = size-1, tmp = length; i >= 0; i--)
-        {
-                if (index[i] == tmp)
-                {
-                     res[tmp] = arr_0[i];
-                     tmp--;
-                }
-        }
-        //writing in output file
-
-        fp = fopen(argv[1],"w");
-        //if it fails
+		If the new conditions are met, remember new sequence 			and new length
+		*/
+		j=binary_search(input,M,i,L);
+		if(j!=-1)
+			P[i]=M[j];
+		if((j==L) || (input[i]<input[M[j+1]]))
+			M[j+1]=i;
+		if((j+1)>L)
+			L=j+1;
+	}
+	
+	int * LIS = (int*) malloc((L+1)*sizeof(int));
+	int temp=M[L];
+	//Read backwards
+	for(i=L;i>=0;i--)
+	{
+		LIS[i]=input[temp];
+		temp=P[temp];
+	}
+	fp=fopen(argv[2],"w");
         if(fp==NULL)
         {
             printf("Error!");
             return 0;
         }
-        //output formatting
-        for (i = 0; i < length-1; ++i) {
-                fprintf(fp,"%d, ", res[i]);
-        }
-        fprintf(fp,"%d",res[length]);
-        fclose(fp);
+	for(i=0;i<L;i++)
+	{
+		fprintf(fp,"%d, ",LIS[i]);
+	}
+	fprintf(fp,"%d",LIS[L]);
+	fclose(fp);
 
-        //Calculate required time
-        end = clock();
-        time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-        printf("Time [s]: %f\n",time_spent);
-	//Memory allocation calculation in function
-        printf("Memory [B]: %d\n",getValue()*1024);
 
-        return 0;
+	//Calculate required time and memory
+	end = clock();
+	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	printf("Time [s]: %f\n",time_spent);
+
+	printf("Memory [B]: %d\n",getValue()*1024);
+
+	return 0;
+	
 }
